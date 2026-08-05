@@ -1,0 +1,14 @@
+package:
+  name: riscv-frac-clint
+  authors:
+    - "Emil Popović <mail@emilpopovic.me>"
+
+sources:
+  - src/clint_core.sv
+  - src/frac_tick.sv
+  - src/clint_flat.sv
+  - src/clint.sv
+
+  # - target: test
+  #   files:
+  #     - test/
