@@ -17,8 +17,7 @@ REG_IF   = $(shell $(BENDER) path register_interface)
 TB_DEPS  = +incdir+$(REG_IF)/include $(REG_IF)/src/reg_intf.sv
 
 VFLAGS := --timing --timescale 1ns/1ps -Wall
-VSIM_FLAGS := --binary --assert --trace --quiet \
-              -Wno-UNUSEDSIGNAL -Wno-SYNCASYNCNET -Wno-DECLFILENAME
+VSIM_FLAGS := --binary --assert --trace -Wno-UNUSEDSIGNAL -Wno-SYNCASYNCNET -Wno-DECLFILENAME
 
 .PHONY: all lint sim regression clean
 all: lint regression
