@@ -1,0 +1,63 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same ref makes an in-flight run redundant
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rtl:
+    name: lint and simulate
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Verilator
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends verilator
+          verilator --version
+
+      # The testbench drives the DUT over REG_BUS, so simulating needs the
+      # register_interface checkout the Makefile resolves through Bender
+      - name: Install Bender
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://pulp-platform.github.io/bender/init \
+            | bash -s -- 0.32.1
+          echo "$PWD" >> "$GITHUB_PATH"
+
+      - name: Lint
+        run: make lint
+
+      - name: Regression
+        run: make regression
+
+  bender:
+    name: bender file list
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Bender
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://pulp-platform.github.io/bender/init \
+            | bash -s -- 0.32.1
+          echo "$PWD" >> "$GITHUB_PATH"
+
+      - name: Generate the file list
+        run: |
+          make sources.f
+          cat sources.f
+
+      # Catches an RTL file that was added to src/ but never to Bender.yml
+      - name: Check every RTL file made it into the list
+        run: |
+          for f in src/*.sv; do
+            grep -q "/$f\$" sources.f || { echo "$f missing from sources.f"; exit 1; }
+          done

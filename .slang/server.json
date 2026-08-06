@@ -4,7 +4,7 @@
   "index": [
     {
       "dirs": ["src", "test/", ".bender/git/checkouts"],
-      "excludeDirs": ["build", "obj_dir", ".bender"]
+      "excludeDirs": ["build", "obj_dir"]
     }
   ]
 }

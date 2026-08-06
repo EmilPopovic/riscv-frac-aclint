@@ -16,25 +16,6 @@
 //
 // Emil Popović <mail@emilpopovic.me>
 
-// Default register bus types
-package aclint_reg_pkg;
-
-    typedef struct packed {
-        logic [31:0] addr;
-        logic        write;
-        logic [31:0] wdata;
-        logic [3:0]  wstrb;
-        logic        valid;
-    } aclint_reg_req_t;
-
-    typedef struct packed {
-        logic [31:0] rdata;
-        logic        error;
-        logic        ready;
-    } aclint_reg_rsp_t;
-
-endpackage
-
 module aclint #(
     parameter int unsigned NumHarts = 1,
     // Fractional tick generator parameters
@@ -53,6 +34,7 @@ module aclint #(
     output reg_rsp_t            reg_rsp_o,
     output logic [NumHarts-1:0] mtip_o,
     output logic [NumHarts-1:0] msip_o,
+    output logic [NumHarts-1:0] ssip_set_o,
     output logic [63:0]         mtime_o
 );
 
@@ -76,6 +58,7 @@ module aclint #(
         .ready_o ( reg_rsp_o.ready ),
         .mtip_o,
         .msip_o,
+        .ssip_set_o,
         .mtime_o
     );
 

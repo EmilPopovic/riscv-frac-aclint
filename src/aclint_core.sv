@@ -34,7 +34,7 @@ module aclint_core #(
     // strobed bytes are updated. All zero is a read.
     input  logic [3:0]  wstrb_i,
 
-    // Selects which hart's msip/mtimecmp is targeted. Ignored for mtime.
+    // Selects which hart's msip/mtimecmp/setssip is targeted. Ignored for mtime.
     input  logic [HartIdW-1:0] hart_idx_i,
 
     // Register enables, one at a time
@@ -43,10 +43,15 @@ module aclint_core #(
     input  logic        mtimecmp_en_i,
     input  logic        mtimecmph_en_i,
     input  logic        msip_en_i,
+    input  logic        setssip_en_i,
 
     // Interrupt outputs, one bit per hart
     output logic [NumHarts-1:0] mtip_o,
     output logic [NumHarts-1:0] msip_o,
+
+    // Supervisor software interrupt set request, one bit per hart.
+    // Asserted for a single cycle.
+    output logic [NumHarts-1:0] ssip_set_o,
 
     // Time output, broadcast for rdtime/rdtimeh
     output logic [63:0] mtime_o
@@ -125,6 +130,12 @@ module aclint_core #(
             else         mtip_o[h] <= (mtime >= mtimecmp[h]);
         end
 
+        // Writing 1 raises the hart's supervisor software interrupt, writing 0 does nothing.
+        always_ff @(posedge clk_i or negedge rst_ni) begin
+            if (!rst_ni) ssip_set_o[h] <= 1'b0;
+            else         ssip_set_o[h] <= hart_sel && setssip_en_i && wstrb_i[0] && wdata_i[0];
+        end
+
     end : gen_hart
 
     // Read mux
@@ -144,13 +155,14 @@ module aclint_core #(
 `ifndef SYNTHESIS
     // Enables are documented as one-hot-or-zero
     assert property (@(posedge clk_i) disable iff (!rst_ni)
-        $onehot0({mtime_en_i, mtimeh_en_i, mtimecmp_en_i, mtimecmph_en_i, msip_en_i}))
-      else $error("clint_core: more than one register enable asserted");
+        $onehot0({mtime_en_i, mtimeh_en_i, mtimecmp_en_i, mtimecmph_en_i,
+                  msip_en_i, setssip_en_i}))
+      else $error("aclint_core: more than one register enable asserted");
 
     // Decoder should never present an out-of-range hart index
     assert property (@(posedge clk_i) disable iff (!rst_ni)
-        (mtimecmp_en_i || mtimecmph_en_i || msip_en_i) |-> hart_idx_ok)
-      else $error("clint_core: hart_idx_i out of range");
+        (mtimecmp_en_i || mtimecmph_en_i || msip_en_i || setssip_en_i) |-> hart_idx_ok)
+      else $error("aclint_core: hart_idx_i out of range");
 `endif
 
 endmodule

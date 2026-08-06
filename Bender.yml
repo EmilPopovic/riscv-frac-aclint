@@ -8,6 +8,7 @@ dependencies:
   register_interface: { git: "https://github.com/pulp-platform/register_interface.git", version: 0.3.9  }
 
 sources:
+  - src/aclint_reg_pkg.sv
   - src/aclint_core.sv
   - src/frac_tick.sv
   - src/aclint_flat.sv
