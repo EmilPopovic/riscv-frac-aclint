@@ -115,11 +115,14 @@ module aclint_tb #(
     // level output can. This monitor counts, per hart, how many cycles it was
     // asserted for.
     int unsigned ssip_cycles [NumHarts];
-    int unsigned ssip_run     = 0;
-    int unsigned ssip_max_run = 0;
+    int unsigned ssip_run;
+    int unsigned ssip_max_run;
 
-    initial
+    initial begin
         for (int unsigned h = 0; h < NumHarts; h++) ssip_cycles[h] = 0;
+        ssip_run     = 0;
+        ssip_max_run = 0;
+    end
 
     // Blocking assignments are deliberate. This is an observer, and the checks
     // read these counters as plain variables rather than as sampled signals.
@@ -556,6 +559,17 @@ module aclint_tb #(
         val64 = mtime;
         step(32);
         chk("mtime frozen at target 0", mtime, val64);
+
+        // A source rate of zero has no fraction to accumulate, so it stops the
+        // counter as well rather than running the accumulator up into a wrap
+        freeze_time();
+        write64(MtimeLo, 64'd0);
+        set_rate(1, 0);
+        step(32);
+        chk("mtime frozen at source 0", mtime, 64'd0);
+
+        // Either degenerate rate recovers once a usable one is written back
+        check_rate(1, 4, 400);
 
         // Every ssip_set_o assertion over the whole run was a single cycle wide.
         // A zero here would mean the set path never fired at all.

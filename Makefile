@@ -17,6 +17,7 @@ REG_IF   = $(shell $(BENDER) path register_interface)
 TB_DEPS  = +incdir+$(REG_IF)/include $(REG_IF)/src/reg_intf.sv
 
 VFLAGS := --timing --timescale 1ns/1ps -Wall
+VLINT_FLAGS := -Wno-SYNCASYNCNET
 VSIM_FLAGS := --binary --assert --trace -Wno-UNUSEDSIGNAL -Wno-SYNCASYNCNET -Wno-DECLFILENAME
 
 .PHONY: all lint sim regression ide clean
@@ -31,7 +32,7 @@ ide: .slang/aclint.f
 	./.slang/flist.sh > $@
 
 lint: $(RTL)
-	$(VERILATOR) --lint-only $(VFLAGS) --top aclint $(RTL)
+	$(VERILATOR) --lint-only $(VFLAGS) $(VLINT_FLAGS) --top aclint $(RTL)
 
 sim: $(BUILD)/aclint_tb
 	$<

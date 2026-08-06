@@ -38,10 +38,14 @@ module frac_tick #(
 
     assign tick_o = !acc[W];  // acc >= 0
 
+    logic src_zero;
+    assign src_zero = (source_i == '0);
+
     always_ff @(posedge clk_i or negedge rst_ni) begin
-        if      (!rst_ni) acc <= ~$signed({1'b0, source_i});
-        else if (load_i)  acc <= ~$signed({1'b0, source_i});
-        else              acc <= acc + (tick_o ? step_hi : step_lo);
+        if      (!rst_ni)  acc <= '1;
+        else if (load_i)   acc <= ~$signed({1'b0, source_i});
+        else if (src_zero) acc <= '1;
+        else               acc <= acc + (tick_o ? step_hi : step_lo);
     end
 
 endmodule

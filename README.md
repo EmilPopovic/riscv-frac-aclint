@@ -26,7 +26,7 @@ The specification defines MSWI, MTIMER and SSWI as separately placeable devices.
 - **`MSIP[h]`** - machine software interrupt pending for hart `h`. Only bit 0 is implemented, the upper 31 bits read as zero and ignore writes. Writing 1 raises `msip_o[h]`, writing 0 lowers it.
 - **`MTIMECMP[h]`** - machine timer compare for hart `h`. `mtip_o[h]` is asserted while `MTIME >= MTIMECMP[h]`, as an unsigned 64-bit comparison. Resets to all ones so no timer interrupt is pending out of reset.
 - **`MTIME`** - the global 64-bit time counter, shared by all harts and mirrored on `mtime_o` for `rdtime`/`rdtimeh`. A write takes priority over an increment.
-- **`TICKTARGET`, `TICKSOURCE`** - the tick generator rates, `TickW` bits wide each. Bits above `TickW` read as zero and ignore writes. Writing either register reloads the accumulator.
+- **`TICKTARGET`, `TICKSOURCE`** - the tick generator rates, `TickW` bits wide each. Bits above `TickW` read as zero and ignore writes. Writing either register reloads the accumulator. Either register at zero stops `MTIME`.
 - **`SETSSIP[h]`** - supervisor software interrupt set for hart `h`. Writing 1 to bit 0 pulses `ssip_set_o[h]` for one cycle. Writing 0 does nothing, and bits above bit 0 are ignored. Reads return zero.
 
 Accesses are decoded at word granularity: the two low address bits are ignored and byte lanes come from `wstrb`, which is how the upstream bus adapters present sub-word accesses. Reads and writes complete with zero wait states, `ready` is always high.
@@ -54,7 +54,7 @@ acc += tick ? (target - source) : target
 
 Over `N` cycles the accumulator's net change is `N*target - ticks*source`. It is bounded by construction, so `ticks` converges on `N*target/source`: the rate is exact in the long run and jitter never exceeds one clock period. Since only the ratio matters, `10`/`33` and `10_000_000`/`33_000_000` produce the same 10 MHz timebase from a 33 MHz clock; the smaller pair leaves more headroom in `TickW`.
 
-Setting `TICKTARGET` to zero holds the accumulator negative, which stops `mtime` without stopping the clock.
+A tick is at most one per clock, so a rate above one cannot be honoured. `TICKTARGET > TICKSOURCE` is not rejected, but the tick pattern stops being a useful rate. Keep the target at or below the source.
 
 ## Parameters
 
