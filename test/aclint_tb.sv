@@ -385,11 +385,11 @@ module aclint_tb #(
             reg_write(setssip_addr(h), 32'd1);
             step(2);
             chk($sformatf("setssip[%0d] write of 1 sets once", h),
-                64'(ssip_cycles[h] - ssip_before[h]), 64'd1);
+                64'(ssip_cycles[h]) - 64'(ssip_before[h]), 64'd1);
             for (int unsigned k = 0; k < NumHarts; k++)
                 if (k != h)
                     chk($sformatf("setssip[%0d] left hart %0d alone", h, k),
-                        64'(ssip_cycles[k] - ssip_before[k]), 64'd0);
+                        64'(ssip_cycles[k]) - 64'(ssip_before[k]), 64'd0);
 
             // There is no pending bit to read back, so it stays zero
             expect_read($sformatf("setssip[%0d] reads zero after a set", h),
@@ -400,27 +400,27 @@ module aclint_tb #(
             reg_write(setssip_addr(h), 32'd0);
             step(2);
             chk($sformatf("setssip[%0d] write of 0 does nothing", h),
-                64'(ssip_cycles[h] - ssip_before[h]), 64'd0);
+                64'(ssip_cycles[h]) - 64'(ssip_before[h]), 64'd0);
 
             // Only bit 0 is looked at
             ssip_before[h] = ssip_cycles[h];
             reg_write(setssip_addr(h), 32'hFFFF_FFFE);
             step(2);
             chk($sformatf("setssip[%0d] ignores bits above bit 0", h),
-                64'(ssip_cycles[h] - ssip_before[h]), 64'd0);
+                64'(ssip_cycles[h]) - 64'(ssip_before[h]), 64'd0);
 
             ssip_before[h] = ssip_cycles[h];
             reg_write(setssip_addr(h), 32'hFFFF_FFFF);
             step(2);
             chk($sformatf("setssip[%0d] write of all ones sets", h),
-                64'(ssip_cycles[h] - ssip_before[h]), 64'd1);
+                64'(ssip_cycles[h]) - 64'(ssip_before[h]), 64'd1);
 
             // A strobe that misses byte 0 cannot reach bit 0
             ssip_before[h] = ssip_cycles[h];
             reg_write(setssip_addr(h), 32'hFFFF_FFFF, 4'b1110);
             step(2);
             chk($sformatf("setssip[%0d] needs byte 0 strobed", h),
-                64'(ssip_cycles[h] - ssip_before[h]), 64'd0);
+                64'(ssip_cycles[h]) - 64'(ssip_before[h]), 64'd0);
         end
 
         // Reading SETSSIP must not set anything
@@ -431,7 +431,7 @@ module aclint_tb #(
             expect_read($sformatf("setssip[%0d] reads zero", k), setssip_addr(k), 32'd0);
         step(2);
         for (int unsigned k = 0; k < NumHarts; k++) total_after += ssip_cycles[k];
-        chk("reading setssip raises nothing", 64'(total_after - total_before), 64'd0);
+        chk("reading setssip raises nothing", 64'(total_after) - 64'(total_before), 64'd0);
 
         // SSWI and MSWI must not alias each other
         chk("msip untouched by the SSWI accesses", 64'(msip), 64'd0);
