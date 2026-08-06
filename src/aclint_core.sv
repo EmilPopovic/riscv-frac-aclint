@@ -16,7 +16,7 @@
 //
 // Emil Popović <mail@emilpopovic.me>
 
-module clint_core #(
+module aclint_core #(
     parameter  int unsigned NumHarts = 1,
     localparam int unsigned HartIdW  = (NumHarts > 1) ? $clog2(NumHarts) : 1
 ) (

@@ -16,7 +16,7 @@
 //
 // Emil Popović <mail@emilpopovic.me>
 
-module clint_flat #(
+module aclint_flat #(
     parameter int unsigned NumHarts = 1,
     // Fractional tick generator parameters
     parameter int unsigned TickW         = 26,
@@ -61,9 +61,9 @@ module clint_flat #(
         .tick_o   ( tick   )
     );
 
-    clint_core #(
+    aclint_core #(
         .NumHarts ( NumHarts )
-    ) i_clint_core (
+    ) i_aclint_core (
         .clk_i,
         .rst_ni,
         .tick_i         ( tick ),
