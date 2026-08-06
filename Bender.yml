@@ -1,7 +1,11 @@
 package:
   name: riscv-frac-aclint
+  description: RISC-V Advanced Core Local Interrupt Controller with Fractional Timer
   authors:
     - "Emil Popović <mail@emilpopovic.me>"
+
+dependencies:
+  register_interface: { git: "https://github.com/pulp-platform/register_interface.git", version: 0.3.9  }
 
 sources:
   - src/aclint_core.sv
@@ -9,6 +13,6 @@ sources:
   - src/aclint_flat.sv
   - src/aclint.sv
 
-  # - target: test
-  #   files:
-  #     - test/
+  - target: test
+    files:
+      - test/aclint_tb.sv

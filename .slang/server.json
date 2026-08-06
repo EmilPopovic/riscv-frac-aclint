@@ -1,0 +1,10 @@
+{
+  "flags": "--top aclint --timescale 1ns/1ps -Wno-duplicate-definition",
+  "build": "sources.f",
+  "index": [
+    {
+      "dirs": ["src", "test/", ".bender/git/checkouts"],
+      "excludeDirs": ["build", "obj_dir", ".bender"]
+    }
+  ]
+}

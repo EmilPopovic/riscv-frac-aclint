@@ -1,8 +1,2 @@
-.*
-!.git*
-!.ci/
-/.git/
-/build
-/Bender.local
-*.log
-*.wlf
+.bender/
+sources.f

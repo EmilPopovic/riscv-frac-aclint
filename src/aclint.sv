@@ -16,6 +16,25 @@
 //
 // Emil Popović <mail@emilpopovic.me>
 
+// Default register bus types
+package aclint_reg_pkg;
+
+    typedef struct packed {
+        logic [31:0] addr;
+        logic        write;
+        logic [31:0] wdata;
+        logic [3:0]  wstrb;
+        logic        valid;
+    } aclint_reg_req_t;
+
+    typedef struct packed {
+        logic [31:0] rdata;
+        logic        error;
+        logic        ready;
+    } aclint_reg_rsp_t;
+
+endpackage
+
 module aclint #(
     parameter int unsigned NumHarts = 1,
     // Fractional tick generator parameters
@@ -23,8 +42,8 @@ module aclint #(
     parameter int unsigned DefaultTarget = 1,
     parameter int unsigned DefaultSource = 1,
     // Register interface parameters
-    parameter type reg_req_t = logic,
-    parameter type reg_rsp_t = logic,
+    parameter type reg_req_t = aclint_reg_pkg::aclint_reg_req_t,
+    parameter type reg_rsp_t = aclint_reg_pkg::aclint_reg_rsp_t,
     parameter int AW = 32,
     parameter int DW = 32
 ) (
@@ -38,9 +57,12 @@ module aclint #(
 );
 
     aclint_flat #(
-        .NumHarts ( NumHarts ),
-        .AW       ( AW       ),
-        .DW       ( DW       )
+        .NumHarts      ( NumHarts      ),
+        .TickW         ( TickW         ),
+        .DefaultTarget ( DefaultTarget ),
+        .DefaultSource ( DefaultSource ),
+        .AW            ( AW            ),
+        .DW            ( DW            )
     ) i_aclint_flat (
         .clk_i,
         .rst_ni,
