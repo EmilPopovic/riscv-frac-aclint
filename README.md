@@ -1,7 +1,5 @@
 # RISC-V Advanced Core Local Interruptor (ACLINT) with Fractional Timer
 
-[![ci](https://github.com/EmilPopovic/riscv-frac-clint/actions/workflows/ci.yml/badge.svg)](https://github.com/EmilPopovic/riscv-frac-clint/actions/workflows/ci.yml)
-
 The repository contains a RISC-V Advanced Core Local Interruptor, [specification Version 1.0-rc4 (stable)](https://github.com/riscvarchive/riscv-aclint/releases/tag/v1.0-rc4).
 
 The ACLINT plugs into a [generic register interface](https://github.com/pulp-platform/register_interface), which may be adapted to various protocols including AMBA APB and AXI 4/Lite (see repository for adapter IPs).
@@ -122,3 +120,13 @@ make regression    # re-run the testbench for hart counts 1, 2, 3, 4, 7
 `build/aclint_tb +vcd` writes a waveform dump.
 
 `make sources.f` regenerates the Bender file list for integration into a larger project.
+
+## Editor setup
+
+`.slang/server.json` configures the [slang language server](https://github.com/hudson-trading/slang-server) for in-editor diagnostics. It reads a file list that has to be generated first:
+
+```sh
+bender checkout && make ide
+```
+
+Re-run `make ide` after changing `Bender.yml` or `Bender.lock`.

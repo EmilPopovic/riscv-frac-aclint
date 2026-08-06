@@ -19,12 +19,16 @@ TB_DEPS  = +incdir+$(REG_IF)/include $(REG_IF)/src/reg_intf.sv
 VFLAGS := --timing --timescale 1ns/1ps -Wall
 VSIM_FLAGS := --binary --assert --trace -Wno-UNUSEDSIGNAL -Wno-SYNCASYNCNET -Wno-DECLFILENAME
 
-.PHONY: all lint sim regression clean
+.PHONY: all lint sim regression ide clean
 all: lint regression
 
 # File list for integration into a larger project
 sources.f: Bender.yml Bender.lock
 	$(BENDER) script flist-plus -t src -t synthesis > $@
+
+ide: .slang/aclint.f
+.slang/aclint.f: Bender.yml Bender.lock .slang/flist.sh
+	./.slang/flist.sh > $@
 
 lint: $(RTL)
 	$(VERILATOR) --lint-only $(VFLAGS) --top aclint $(RTL)

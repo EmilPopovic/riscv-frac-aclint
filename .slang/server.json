@@ -1,6 +1,13 @@
 {
-  "flags": "--top aclint --timescale 1ns/1ps -Wno-duplicate-definition",
-  "build": "sources.f",
+  "flags": "--top aclint --top aclint_tb --timescale 1ns/1ps -Wno-duplicate-definition --suppress-warnings .bender/git/checkouts/*/*.sv,.bender/git/checkouts/*/*/*.sv,.bender/git/checkouts/*/*/*/*.sv,.bender/git/checkouts/*/*/*/*/*.sv,.bender/git/checkouts/*/*/*/*/*/*.sv",
+  "build": ".slang/aclint.f",
+  "builds": [
+    {
+      "name": "aclint",
+      "glob": "Bender.yml",
+      "command": "./.slang/flist.sh"
+    }
+  ],
   "index": [
     {
       "dirs": ["src", "test/", ".bender/git/checkouts"],
