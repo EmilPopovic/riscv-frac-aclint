@@ -2,11 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
 
-## 0.1.1 - 2026-08-06
+## [0.1.1] - 2026-08-06
 
 ### Fixed
 
@@ -17,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Initialize the testbench's pulse monitor counters in an `initial` block, so the testbench builds under Verilator's `PROCASSINIT` check.
 
-## 0.1.0 - 2026-08-06
+## [0.1.0] - 2026-08-06 [YANKED]
 
 ### Changed
 
