@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- YANKED because of a critical reset bug making it unsafe outside of simulation.
 - Lint fix.
 
 ### Added
