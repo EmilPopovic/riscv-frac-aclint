@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `.slang/flist.sh` only uses Bender, no fallback.
+
 ## [0.1.1] - 2026-08-06
 
 ### Fixed
