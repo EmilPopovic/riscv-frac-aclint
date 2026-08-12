@@ -52,6 +52,28 @@ module aclint_flat #(
     output logic [63:0]         mtime_o
 );
 
+    localparam int unsigned MaxHarts = 4095;
+
+    // Parameter checks
+    if (DW != 32) begin : gen_dw_check
+        $fatal(1, "aclint_flat: DW must be 32, got %0d", DW);
+    end
+    if (AW < 17 || AW > 32) begin : gen_aw_check
+        $fatal(1, "aclint_flat: AW must be in [17, 32], got %0d", AW);
+    end
+    if (NumHarts < 1 || NumHarts > MaxHarts) begin : gen_numharts_check
+        $fatal(1, "aclint_flat: NumHarts must be in [1, %0d], got %0d", MaxHarts, NumHarts);
+    end
+    if (TickW < 1 || TickW > 32) begin : gen_tickw_check
+        $fatal(1, "aclint_flat: TickW must be in [1, 32], got %0d", TickW);
+    end
+    if (TickW < 32 && DefaultTarget >= (32'd1 << TickW)) begin : gen_default_target_check
+        $fatal(1, "aclint_flat: DefaultTarget does not fit in TickW bits");
+    end
+    if (TickW < 32 && DefaultSource >= (32'd1 << TickW)) begin : gen_default_source_check
+        $fatal(1, "aclint_flat: DefaultSource does not fit in TickW bits");
+    end
+
     localparam int unsigned HartIdW = (NumHarts > 1) ? $clog2(NumHarts) : 1;
 
     // Register map, offsets relative to the base the interconnect assigns to this device.
@@ -69,7 +91,6 @@ module aclint_flat #(
     localparam logic [16:0] SetssipBase   = 17'h1_0000;
     localparam logic [16:0] SetssipEnd    = 17'h1_4000;
 
-    localparam int unsigned MaxHarts = 4095;
 
     // Word-aligned offset into the region.
     // The low two address bits are ignored because byte lanes come from wstrb.
@@ -225,22 +246,5 @@ module aclint_flat #(
     assign rdata_o = in_target ? {{(32-TickW){1'b0}}, target_q} :
                      in_source ? {{(32-TickW){1'b0}}, source_q} :
                      core_rdata;
-
-`ifndef SYNTHESIS
-    initial begin : p_param_check
-        assert (DW == 32)
-          else $fatal(1, "aclint_flat: DW must be 32, got %0d", DW);
-        assert (AW >= 17 && AW <= 32)
-          else $fatal(1, "aclint_flat: AW must be in [17, 32], got %0d", AW);
-        assert (NumHarts >= 1 && NumHarts <= MaxHarts)
-          else $fatal(1, "aclint_flat: NumHarts must be in [1, %0d], got %0d", MaxHarts, NumHarts);
-        assert (TickW >= 1 && TickW <= 32)
-          else $fatal(1, "aclint_flat: TickW must be in [1, 32], got %0d", TickW);
-        assert (TickW >= 32 || DefaultTarget < (32'd1 << TickW))
-          else $fatal(1, "aclint_flat: DefaultTarget does not fit in TickW bits");
-        assert (TickW >= 32 || DefaultSource < (32'd1 << TickW))
-          else $fatal(1, "aclint_flat: DefaultSource does not fit in TickW bits");
-    end
-`endif
 
 endmodule
