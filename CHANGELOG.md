@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-09-26
+
+### Changed
+
+- Changed license from Apache 2.0 to SolderPad 2.1
+
 ## [0.1.2] - 2026-08-13
 
 ### Changed
