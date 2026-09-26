@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Changed license from Apache 2.0 to SolderPad 2.1
+- Transferred to FRISC-V org
 
 ## [0.1.2] - 2026-08-13
 
